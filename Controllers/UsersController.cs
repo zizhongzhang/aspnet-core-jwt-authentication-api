@@ -5,7 +5,7 @@ using WebApi.Entities;
 
 namespace WebApi.Controllers
 {
-  [Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase
@@ -29,11 +29,19 @@ namespace WebApi.Controllers
             return Ok(user);
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAll")]
         public IActionResult GetAll()
         {
-            var users =  _userService.GetAll();
+            var users = _userService.GetAll();
             return Ok(users);
+        }
+
+        [Authorize(Policy = "admin")]
+        [HttpGet]
+        [Route("admin")]
+        public IActionResult GetAdmin()
+        {
+            return Ok("Admin yes");
         }
     }
 }

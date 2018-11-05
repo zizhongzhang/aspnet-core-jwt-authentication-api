@@ -8,10 +8,12 @@ using WebApi.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Net;
+using System.Security.Claims;
 
 namespace WebApi
 {
-  public class Startup
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -51,6 +53,15 @@ namespace WebApi
                 };
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("admin", (builder) =>
+                {
+                    builder.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    builder.RequireClaim(ClaimTypes.Role, "admin", "user");
+                });
+            });
+
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
         }
@@ -69,7 +80,7 @@ namespace WebApi
                 .AllowCredentials());
 
             app.UseAuthentication();
-            
+
             app.UseMvc();
         }
     }
